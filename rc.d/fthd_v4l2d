@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# PROVIDE: fthd_v4l2d
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+#
+# Add to /etc/rc.conf:
+#   fthd_v4l2d_enable="YES"
+#   fthd_v4l2d_args=""	# e.g. "-u 0 -g video"
+
+. /etc/rc.subr
+
+name=fthd_v4l2d
+rcvar=fthd_v4l2d_enable
+
+load_rc_config $name
+
+: ${fthd_v4l2d_enable:="NO"}
+: ${fthd_v4l2d_args:=""}
+
+pidfile="/var/run/${name}.pid"
+procname="/usr/local/sbin/fthd-v4l2d"
+command="/usr/sbin/daemon"
+# Run in the foreground under daemon(8) so we get a pidfile and restarts
+command_args="-S -T ${name} -r -P ${pidfile} ${procname} -f ${fthd_v4l2d_args}"
+required_modules="fthd:pci/fthd cuse"
+
+run_rc_command "$1"
